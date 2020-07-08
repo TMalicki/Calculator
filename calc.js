@@ -1,3 +1,6 @@
+// try to use one variable and than assign it to firstValue or secondValue
+// percentage needs rework
+
 let calcButtons = new Array(24);
 
 let displayedValue = "";
@@ -74,16 +77,17 @@ function chosenTile(index)
     {
         addOperator("/");
     }
+    else if(calcButtons[index] == "%")
+    {
+        addOperator("%");
+    }
     else if(calcButtons[index] == '<i class="icon-eq"> </i>')
     {
         signToChoose = false;
     }
     else if(calcButtons[index] == "C")
     {
-        tempEquation = "";
-        lastDisplayedValue = "";
-        displayedValue = "";
-        flag = false;
+        clearAll();
     }
 
     if(firstValue != undefined && secondValue == undefined) fullEquation += firstValue;
@@ -91,22 +95,7 @@ function chosenTile(index)
     
     if(firstValue != undefined && secondValue != undefined && chosenSign != undefined && signToChoose == false)
     {
-        switch(chosenSign)
-        {
-            case "+": 
-                actualValue = Number(firstValue) + Number(secondValue);
-                break;
-            case "-":
-                actualValue = Number(firstValue) - Number(secondValue);
-                break;
-            case "*":
-                actualValue = Number(firstValue) * Number(secondValue);
-                break;
-            case "/":
-                if(secondValue == 0) actualValue = "Cannot divide by zero.";
-                else    actualValue = Number(firstValue) / Number(secondValue);
-                break;
-        }
+        doMath(chosenSign, firstValue, secondValue);
         firstValue = actualValue;
         secondValue = undefined;
 
@@ -116,22 +105,59 @@ function chosenTile(index)
         fullEquation += chosenSign;
         console.log('ActualValue: ' + actualValue);
    }   
-    console.log(signToChoose);
-    document.getElementById("fastInput").innerHTML = actualValue;
-    document.getElementById("equation").innerHTML = fullEquation;
+
+    if(actualValue != "" && fullEquation != "")
+    {
+        console.log('OK');
+        document.getElementById("fastInput").innerHTML = actualValue;
+        document.getElementById("equation").innerHTML = fullEquation;
+    }
 }
 
+function doMath(chooseSign, firstValue, secondValue)
+{
+    switch(chosenSign)
+    {
+        case "+": 
+            actualValue = Number(firstValue) + Number(secondValue);
+            break;
+        case "-":
+            actualValue = Number(firstValue) - Number(secondValue);
+            break;
+        case "*":
+            actualValue = Number(firstValue) * Number(secondValue);
+            break;
+        case "/":
+            if(secondValue == 0) actualValue = "Cannot divide by zero.";
+            else    actualValue = Number(firstValue) / Number(secondValue);
+            break;
+        case "%":
+            actualValue = Number(firstValue) % Number(secondValue);
+            break;
+    }
+}
+function clearAll()
+{
+    displayedValue = "";
+    firstValue = undefined;
+    secondValue = undefined;
+    chosenSign = undefined;
+    storedSign = "";
+    actualValue = "";
+    fullEquation = "";
+    signToChoose = false;
+    document.getElementById("fastInput").innerHTML = 0;
+    document.getElementById("equation").innerHTML = 0;
+}
 function addOperator(operator)
 {
     if(secondValue == undefined) chosenSign = operator;
     else storedSign = operator;
     signToChoose = false;
-    console.log(chosenSign);
-    console.log(storedSign);
 }
-
 function addNumber(index)
 {
+    //let actualNumber = calcButtons[index];
     if(firstValue != undefined && chosenSign != undefined)
     {
         if(secondValue != undefined) 
