@@ -1,4 +1,5 @@
-// try to use one variable and than assign it to firstValue or secondValue
+// nie można po kliknięciu równa się wpisać nowego działania bez jakiegokolwiek resetu
+// fullEquation działa, ale w pamięci zostaje znak którego nie mogę zmienić bez wykorzystania
 // percentage needs rework
 
 let calcButtons = new Array(24);
@@ -7,10 +8,11 @@ let displayedValue = "";
 let firstValue;
 let secondValue;
 let chosenSign;
-let storedSign = "";
+let storedSign = undefined;
 let actualValue = "";
 let fullEquation = "";
 let signToChoose = false;
+let actualNumber;
 
 function start()
 {
@@ -58,9 +60,9 @@ function chosenTile(index)
     if(calcButtons[index] == "0" || calcButtons[index] == "1" || calcButtons[index] == "2" || calcButtons[index] == "3"
         || calcButtons[index] == "4" || calcButtons[index] == "5" || calcButtons[index] == "6" || calcButtons[index] == "7"
         || calcButtons[index] == "8" || calcButtons[index] == "9")
-        {          
-           addNumber(index);
-        }
+    {          
+        addNumber(index);
+    }
     else if(calcButtons[index] == '<i class="icon-plus"> </i>')
     {
         addOperator("+");
@@ -83,28 +85,35 @@ function chosenTile(index)
     }
     else if(calcButtons[index] == '<i class="icon-eq"> </i>')
     {
-        signToChoose = false;
+        addOperator("=");
     }
     else if(calcButtons[index] == "C")
     {
         clearAll();
     }
 
-    if(firstValue != undefined && secondValue == undefined) fullEquation += firstValue;
-    else if(secondValue != undefined) fullEquation += secondValue;
-    
     if(firstValue != undefined && secondValue != undefined && chosenSign != undefined && signToChoose == false)
     {
         doMath(chosenSign, firstValue, secondValue);
-        firstValue = actualValue;
-        secondValue = undefined;
-
+         
         chosenSign = storedSign;
         storedSign = "";
 
-        fullEquation += chosenSign;
+        if(chosenSign == "")
+        {
+            firstValue = undefined;
+            secondValue = undefined;
+        }
+        else
+        {
+            firstValue = actualValue;
+            secondValue = undefined;
+        }
+
+        console.log('s: ' + firstValue + " " + chosenSign + " " + secondValue);
         console.log('ActualValue: ' + actualValue);
-   }   
+
+    }   
 
     if(actualValue != "" && fullEquation != "")
     {
@@ -151,39 +160,38 @@ function clearAll()
 }
 function addOperator(operator)
 {
+    if(firstValue == undefined)
+    {
+        if(actualNumber == undefined) firstValue = actualValue;
+        else firstValue = actualNumber;
+    } 
+    else if(secondValue == undefined) secondValue = actualNumber
+
     if(secondValue == undefined) chosenSign = operator;
     else storedSign = operator;
+
+    actualNumber = undefined;
+    actualValue = "";
     signToChoose = false;
+
+    if(isNaN(parseFloat(fullEquation[fullEquation.length - 1])))
+    {
+        fullEquation.replace(fullEquation.length-1, chosenSign);
+        console.log(fullEquation[fullEquation.length - 1]);
+        console.log("TUTAJ");
+    }
+    else fullEquation += chosenSign;
+
+    document.getElementById("equation").innerHTML = fullEquation;
 }
 function addNumber(index)
-{
-    //let actualNumber = calcButtons[index];
-    if(firstValue != undefined && chosenSign != undefined)
-    {
-        if(secondValue != undefined) 
-        {
-            secondValue += calcButtons[index];
-        }
-        else
-        {
-            secondValue = calcButtons[index];
-        }
-        actualValue = secondValue;
-        signToChoose = true;
-    }
-    else
-    {
-        if(firstValue != undefined)
-        {
-            firstValue += calcButtons[index];
-        }
-        else
-        {
-            firstValue = calcButtons[index];
-        }
-        actualValue = firstValue;
-        signToChoose = true;
-    }
+{ 
+    if(actualNumber == undefined) actualNumber = calcButtons[index];
+    else actualNumber += calcButtons[index];
+
+    actualValue = actualNumber;
+    fullEquation += calcButtons[index];
+    signToChoose = true;
 }
 
 window.onload = start;
