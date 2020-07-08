@@ -1,7 +1,13 @@
 let calcButtons = new Array(24);
-let calculation = "";
-let lastEquation = 0;
-let flag = false;
+
+let displayedValue = "";
+let firstValue;
+let secondValue;
+let chosenSign;
+let storedSign = "";
+let actualValue = "";
+let fullEquation = "";
+let signToChoose = false;
 
 function start()
 {
@@ -11,7 +17,7 @@ function start()
     calcButtons[1] = "CE";
     calcButtons[2] = "C";
     calcButtons[3] = '<i class="icon-cancel-alt"> </i>';
-    calcButtons[4] = "t";
+    calcButtons[4] = "1/x";
     calcButtons[5] = '<i class="icon-math"> </i>';
     calcButtons[6] = '<i class="icon-superscript"> </i>';
     calcButtons[7] = '<i class="icon-divide"> </i>';
@@ -39,50 +45,119 @@ function start()
 
     document.getElementById("calcBody").innerHTML = divContent;
     document.getElementById("fastInput").innerHTML = 0;
+    document.getElementById("equation").innerHTML = 0;
 }
 
 function chosenTile(index)
 {
-    let equation = "";
-   
+    let tempEquation = "";
+    
     if(calcButtons[index] == "0" || calcButtons[index] == "1" || calcButtons[index] == "2" || calcButtons[index] == "3"
         || calcButtons[index] == "4" || calcButtons[index] == "5" || calcButtons[index] == "6" || calcButtons[index] == "7"
         || calcButtons[index] == "8" || calcButtons[index] == "9")
-        {
-            calculation += calcButtons[index];
-            equation = calculation;
-            flag = true;
+        {          
+           addNumber(index);
         }
-    else if(calcButtons[index] == '<i class="icon-plus"> </i>' && flag == true)
+    else if(calcButtons[index] == '<i class="icon-plus"> </i>')
     {
-        equation = String(Number(document.getElementById("fastInput").innerHTML ) + Number(lastEquation));
-        lastEquation = equation;
-        calculation = "";
-        flag = false;
+        addOperator("+");
     } 
-    else if(calcButtons[index] == '<i class="icon-minus"> </i>' && flag == true)
-    {
-        equation = String(Number(document.getElementById("fastInput").innerHTML ) - Number(lastEquation));
-        lastEquation = equation;
-        calculation = "";
-        flag = false;
-    }
     else if(calcButtons[index] == '<i class="icon-minus"> </i>')
     {
-        document.getElementById("fastInput").innerHTML = equation;
+        addOperator("-")
+    }
+    else if(calcButtons[index] == '<i class="icon-cancel"> </i>')
+    {
+        addOperator("*");
+    }
+    else if(calcButtons[index] == '<i class="icon-divide"> </i>')
+    {
+        addOperator("/");
+    }
+    else if(calcButtons[index] == '<i class="icon-eq"> </i>')
+    {
+        signToChoose = false;
     }
     else if(calcButtons[index] == "C")
     {
-        equation = "";
-        lastEquation = "";
-        calculation = "";
+        tempEquation = "";
+        lastDisplayedValue = "";
+        displayedValue = "";
         flag = false;
+    }
+
+    if(firstValue != undefined && secondValue == undefined) fullEquation += firstValue;
+    else if(secondValue != undefined) fullEquation += secondValue;
+    
+    if(firstValue != undefined && secondValue != undefined && chosenSign != undefined && signToChoose == false)
+    {
+        switch(chosenSign)
+        {
+            case "+": 
+                actualValue = Number(firstValue) + Number(secondValue);
+                break;
+            case "-":
+                actualValue = Number(firstValue) - Number(secondValue);
+                break;
+            case "*":
+                actualValue = Number(firstValue) * Number(secondValue);
+                break;
+            case "/":
+                if(secondValue == 0) actualValue = "Cannot divide by zero.";
+                else    actualValue = Number(firstValue) / Number(secondValue);
+                break;
+        }
+        firstValue = actualValue;
+        secondValue = undefined;
+
+        chosenSign = storedSign;
+        storedSign = "";
+
+        fullEquation += chosenSign;
+        console.log('ActualValue: ' + actualValue);
+   }   
+    console.log(signToChoose);
+    document.getElementById("fastInput").innerHTML = actualValue;
+    document.getElementById("equation").innerHTML = fullEquation;
+}
+
+function addOperator(operator)
+{
+    if(secondValue == undefined) chosenSign = operator;
+    else storedSign = operator;
+    signToChoose = false;
+    console.log(chosenSign);
+    console.log(storedSign);
+}
+
+function addNumber(index)
+{
+    if(firstValue != undefined && chosenSign != undefined)
+    {
+        if(secondValue != undefined) 
+        {
+            secondValue += calcButtons[index];
+        }
+        else
+        {
+            secondValue = calcButtons[index];
+        }
+        actualValue = secondValue;
+        signToChoose = true;
     }
     else
     {
-        equation = document.getElementById("fastInput").innerHTML;
+        if(firstValue != undefined)
+        {
+            firstValue += calcButtons[index];
+        }
+        else
+        {
+            firstValue = calcButtons[index];
+        }
+        actualValue = firstValue;
+        signToChoose = true;
     }
-    document.getElementById("fastInput").innerHTML = equation;
 }
 
 window.onload = start;
