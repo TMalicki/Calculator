@@ -55,6 +55,7 @@ function start()
 
 function chosenTile(index)
 {
+    if(fullEquation[fullEquation.length-1] == "=") fullEquation = "";
     let tempEquation = "";
     
     if(calcButtons[index] == "0" || calcButtons[index] == "1" || calcButtons[index] == "2" || calcButtons[index] == "3"
@@ -94,8 +95,6 @@ function chosenTile(index)
 
     if(firstValue != undefined && secondValue != undefined && chosenSign != undefined && signToChoose == false)
     {
-       // doMath(chosenSign, firstValue, secondValue);
-         
         chosenSign = storedSign;
         storedSign = "";
 
@@ -167,7 +166,6 @@ function addOperator(operator)
     else if(secondValue == undefined) 
     {
         secondValue = actualNumber
-       // chosenSign = operator;
     }
     if(secondValue == undefined) chosenSign = operator;
     else
@@ -176,10 +174,8 @@ function addOperator(operator)
         storedSign = operator;
     } 
     chosenSign = operator;
-    //storedSign = operator;
 
     actualNumber = undefined;
-   // actualValue = "";
     signToChoose = false;
 
     if(isNaN(parseFloat(fullEquation[fullEquation.length - 1])))
