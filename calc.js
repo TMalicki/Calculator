@@ -94,7 +94,7 @@ function chosenTile(index)
 
     if(firstValue != undefined && secondValue != undefined && chosenSign != undefined && signToChoose == false)
     {
-        doMath(chosenSign, firstValue, secondValue);
+       // doMath(chosenSign, firstValue, secondValue);
          
         chosenSign = storedSign;
         storedSign = "";
@@ -109,10 +109,8 @@ function chosenTile(index)
             firstValue = actualValue;
             secondValue = undefined;
         }
-
         console.log('s: ' + firstValue + " " + chosenSign + " " + secondValue);
         console.log('ActualValue: ' + actualValue);
-
     }   
 
     if(actualValue != "" && fullEquation != "")
@@ -160,18 +158,28 @@ function clearAll()
 }
 function addOperator(operator)
 {
+    debugger;
     if(firstValue == undefined)
     {
         if(actualNumber == undefined) firstValue = actualValue;
         else firstValue = actualNumber;
     } 
-    else if(secondValue == undefined) secondValue = actualNumber
-
+    else if(secondValue == undefined) 
+    {
+        secondValue = actualNumber
+       // chosenSign = operator;
+    }
     if(secondValue == undefined) chosenSign = operator;
-    else storedSign = operator;
+    else
+    {
+        doMath(chosenSign, firstValue, secondValue);
+        storedSign = operator;
+    } 
+    chosenSign = operator;
+    //storedSign = operator;
 
     actualNumber = undefined;
-    actualValue = "";
+   // actualValue = "";
     signToChoose = false;
 
     if(isNaN(parseFloat(fullEquation[fullEquation.length - 1])))
