@@ -88,6 +88,12 @@ function chosenTile(index)
     {
         addOperator("=");
     }
+    else if(calcButtons[index] == '<i class="icon-superscript"> </i>')
+    {
+        addOperator("^2");
+        //actualValue = String(Number(actualValue) * Number(actualValue));
+        //console.log("Kwadrat");
+    }
     else if(calcButtons[index] == "C")
     {
         clearAll();
@@ -140,6 +146,10 @@ function doMath(chooseSign, firstValue, secondValue)
         case "%":
             actualValue = Number(firstValue) % Number(secondValue);
             break;
+        case "^2":
+            debugger;
+            actualValue = String(Number(actualValue) * Number(actualValue));
+            break;
     }
 }
 function clearAll()
@@ -168,7 +178,17 @@ function addOperator(operator)
         secondValue = actualNumber
         signToChoose = false;
     }
-    if(secondValue == undefined) chosenSign = operator;
+    if(secondValue == undefined && operator == "^2") 
+    {
+        chosenSign = operator;
+        doMath(chosenSign, firstValue, secondValue);
+        firstValue = undefined;
+     //   firstValue = actualValue;
+    }
+    else if(secondValue == undefined)
+    {
+        chosenSign = operator;
+    }
     else
     {
         doMath(chosenSign, firstValue, secondValue);
