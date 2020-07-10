@@ -94,6 +94,14 @@ function chosenTile(index)
         //actualValue = String(Number(actualValue) * Number(actualValue));
         //console.log("Kwadrat");
     }
+    else if(calcButtons[index] == '<i class="icon-math"> </i>')
+    {
+        addOperator("sqrt");
+    }
+    else if(calcButtons[index] == "1/x")
+    {
+        addOperator("1/x");
+    }
     else if(calcButtons[index] == "C")
     {
         clearAll();
@@ -147,8 +155,13 @@ function doMath(chooseSign, firstValue, secondValue)
             actualValue = Number(firstValue) % Number(secondValue);
             break;
         case "^2":
-            debugger;
-            actualValue = String(Number(actualValue) * Number(actualValue));
+            actualValue = Math.pow(actualValue, 2);
+            break;
+        case "sqrt":
+            actualValue = Math.sqrt(actualValue);
+            break;
+        case "1/x":
+            actualValue = 1/actualValue;
             break;
     }
 }
@@ -167,7 +180,6 @@ function clearAll()
 }
 function addOperator(operator)
 {
-    debugger;
     if(firstValue == undefined)
     {
         if(actualNumber == undefined) firstValue = actualValue;
@@ -178,7 +190,7 @@ function addOperator(operator)
         secondValue = actualNumber
         signToChoose = false;
     }
-    if(secondValue == undefined && operator == "^2") 
+    if(secondValue == undefined && (operator == "^2" || operator == "sqrt" || operator == "1/x")) 
     {
         chosenSign = operator;
         doMath(chosenSign, firstValue, secondValue);
@@ -206,7 +218,17 @@ function addOperator(operator)
     }
     else fullEquation += chosenSign;
     {
-        document.getElementById("equation").innerHTML = fullEquation;
+        if(chosenSign == "1/x")
+        {
+            console.log(fullEquation);
+            fullEquation = fullEquation.slice(0,-3);
+            fullEquation = "1/" + fullEquation;
+            //fullEquation = fullEquation
+        }
+        else
+        {
+            document.getElementById("equation").innerHTML = fullEquation;
+        }
     }
 }
 function addNumber(index)
