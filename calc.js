@@ -166,6 +166,7 @@ function addOperator(operator)
     else if(secondValue == undefined) 
     {
         secondValue = actualNumber
+        signToChoose = false;
     }
     if(secondValue == undefined) chosenSign = operator;
     else
@@ -176,17 +177,17 @@ function addOperator(operator)
     chosenSign = operator;
 
     actualNumber = undefined;
-    signToChoose = false;
-
+  
     if(isNaN(parseFloat(fullEquation[fullEquation.length - 1])))
     {
-        fullEquation.replace(fullEquation.length-1, chosenSign);
+        fullEquation = fullEquation.slice(0,-1) + chosenSign;
         console.log(fullEquation[fullEquation.length - 1]);
         console.log("TUTAJ");
     }
     else fullEquation += chosenSign;
-
-    document.getElementById("equation").innerHTML = fullEquation;
+    {
+        document.getElementById("equation").innerHTML = fullEquation;
+    }
 }
 function addNumber(index)
 { 
