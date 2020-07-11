@@ -102,6 +102,10 @@ function chosenTile(index)
     {
         addOperator("1/x");
     }
+    else if(calcButtons[index] == '<i class="icon-cancel-alt"> </i>')
+    {
+        addOperator("<-");
+    }
     else if(calcButtons[index] == "C")
     {
         clearAll();
@@ -180,6 +184,17 @@ function clearAll()
 }
 function addOperator(operator)
 {
+    if(operator == "<-")
+    {
+        debugger;
+        actualValue = actualValue.toString().slice(0,-1);
+        if(actualValue == "")
+        {
+            actualValue = "0";
+        }
+        actualNumber = actualValue;
+    }
+
     if(firstValue == undefined)
     {
         if(actualNumber == undefined) firstValue = actualValue;
@@ -206,6 +221,7 @@ function addOperator(operator)
         doMath(chosenSign, firstValue, secondValue);
         storedSign = operator;
     } 
+
     chosenSign = operator;
 
     actualNumber = undefined;
