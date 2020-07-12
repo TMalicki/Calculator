@@ -1,6 +1,5 @@
-// nie można po kliknięciu równa się wpisać nowego działania bez jakiegokolwiek resetu
-// fullEquation działa, ale w pamięci zostaje znak którego nie mogę zmienić bez wykorzystania
 // percentage needs rework
+// CE needs to be made
 
 let calcButtons = new Array(24);
 
@@ -55,9 +54,7 @@ function start()
 
 function chosenTile(index)
 {
-    if(fullEquation[fullEquation.length-1] == "=") fullEquation = "";
-    let tempEquation = "";
-    
+    debugger;
     if(calcButtons[index] == "0" || calcButtons[index] == "1" || calcButtons[index] == "2" || calcButtons[index] == "3"
         || calcButtons[index] == "4" || calcButtons[index] == "5" || calcButtons[index] == "6" || calcButtons[index] == "7"
         || calcButtons[index] == "8" || calcButtons[index] == "9")
@@ -91,8 +88,6 @@ function chosenTile(index)
     else if(calcButtons[index] == '<i class="icon-superscript"> </i>')
     {
         addOperator("^2");
-        //actualValue = String(Number(actualValue) * Number(actualValue));
-        //console.log("Kwadrat");
     }
     else if(calcButtons[index] == '<i class="icon-math"> </i>')
     {
@@ -106,36 +101,28 @@ function chosenTile(index)
     {
         addOperator("<-");
     }
+    else if(calcButtons[index] == ",")
+    {
+        addOperator(",");
+    }
+    else if(calcButtons[index] == "+/-")
+    {
+        addOperator("+/-");
+    }
+    else if(calcButtons[index] == "%")
+    {
+        addOperator("%");
+    }
+    else if(calcButtons[index] == "CE")
+    {
+        addOperator("CE");
+    }
     else if(calcButtons[index] == "C")
     {
         clearAll();
     }
 
-    if(firstValue != undefined && secondValue != undefined && chosenSign != undefined && signToChoose == false)
-    {
-        chosenSign = storedSign;
-        storedSign = "";
-
-        if(chosenSign == "")
-        {
-            firstValue = undefined;
-            secondValue = undefined;
-        }
-        else
-        {
-            firstValue = actualValue;
-            secondValue = undefined;
-        }
-        console.log('s: ' + firstValue + " " + chosenSign + " " + secondValue);
-        console.log('ActualValue: ' + actualValue);
-    }   
-
-    if(actualValue != "" && fullEquation != "")
-    {
-        console.log('OK');
-        document.getElementById("fastInput").innerHTML = actualValue;
-        document.getElementById("equation").innerHTML = fullEquation;
-    }
+    update();
 }
 
 function doMath(chooseSign, firstValue, secondValue)
@@ -171,10 +158,10 @@ function doMath(chooseSign, firstValue, secondValue)
 }
 function clearAll()
 {
-    displayedValue = "";
     firstValue = undefined;
     secondValue = undefined;
     chosenSign = undefined;
+    //actualNumber = "0.";
     storedSign = "";
     actualValue = "";
     fullEquation = "";
@@ -186,15 +173,155 @@ function addOperator(operator)
 {
     if(operator == "<-")
     {
-        debugger;
-        actualValue = actualValue.toString().slice(0,-1);
+        deleteLastDigit();
+        operator = undefined;
+    }
+    if(operator == "CE")
+    {
+        actualValue = "";
         if(actualValue == "")
         {
-            actualValue = "0";
+            document.getElementById("fastInput").innerHTML = 0;
         }
         actualNumber = actualValue;
+        operator = undefined;
+    }
+    else if(operator == ",")
+    {
+        actualValue += ".";
+        if(actualNumber == undefined) actualNumber = actualValue;
+        else actualNumber += ".";
+
+        if(firstValue != undefined)
+        {
+            clearAll();
+            actualNumber = "0.";
+        }
+        //if(actualNumber != undefined) actualNumber += "."
+        operator = undefined;
+    }
+    else if(operator == "+/-")
+    {
+        actualValue = -actualValue;
+        if(!isNaN(actualNumber)) actualNumber = - actualNumber;
+        if(firstValue != undefined) firstValue = - firstValue;
+        operator = undefined;
+    }
+    else if(operator == "%")
+    {
+        actualValue = actualValue/100;
+        if(!isNaN(actualNumber)) actualNumber = actualNumber / 100;
+       // if(firstValue != undefined) firstValue = firstValue / 100;
+        operator = undefined;
+    }
+    else
+    {
+        updateNumber();
+
+        if(secondValue == undefined && (operator == "^2" || operator == "sqrt" || operator == "1/x")) 
+        {
+            chosenSign = operator;
+            doMath(chosenSign, firstValue, secondValue);
+         //   firstValue = undefined;
+        }
+        else if(secondValue == undefined)
+        {
+            chosenSign = operator;
+        }
+        else
+        {
+            doMath(chosenSign, firstValue, secondValue);
+            storedSign = operator;
+        } 
+        actualNumber = undefined;
+
+        writeFullEquation();
+    }
+    
+    if(operator != undefined) chosenSign = operator; 
+}
+
+function addNumber(index)
+{ 
+    if(actualNumber == undefined) actualNumber = calcButtons[index];
+    else actualNumber += calcButtons[index];
+
+   // if(actualValue == undefined) actualValue = actualNumber;
+   // else actualValue += actualNumber;
+    actualValue = actualNumber;
+    signToChoose = true;
+}
+
+function deleteLastDigit()
+{
+    actualValue = actualValue.toString().slice(0,-1);
+    if(actualValue == "")
+    {
+        document.getElementById("fastInput").innerHTML = 0;
+    }
+    actualNumber = actualValue;
+}
+
+function update()
+{
+    if(fullEquation[fullEquation.length-1] == "=") fullEquation = "";
+    if(firstValue != undefined && secondValue != undefined && chosenSign != undefined && signToChoose == false)
+    {
+        chosenSign = storedSign;
+        storedSign = "";
+
+        firstValue = actualValue;
+        secondValue = undefined;
+    }   
+
+    if(actualValue != "")    document.getElementById("fastInput").innerHTML = actualValue;
+    if(fullEquation != "")   document.getElementById("equation").innerHTML = fullEquation;
+}
+
+function writeFullEquation()
+{ 
+    if(isNaN(parseFloat(fullEquation[fullEquation.length - 1])) && signToChoose == false)
+    {
+        if(fullEquation == "") 
+        {
+            if(storedSign != "") fullEquation += firstValue + storedSign;
+            else fullEquation += firstValue + chosenSign;
+        }
+        else fullEquation = fullEquation.slice(0,-1) + chosenSign;
+    }
+    else
+    {
+        if(secondValue == undefined) fullEquation += firstValue;
+        else fullEquation += secondValue;
+
+        if(chosenSign == "1/x")
+        {
+            fullEquation = fullEquation.slice(0,-3);
+            fullEquation = "1/" + fullEquation;
+        }
+        else if(chosenSign == ",") {}
+        else if(storedSign == "=") fullEquation += "=";
+        else fullEquation += chosenSign;
     }
 
+    if(secondValue != undefined) 
+    {
+        fullEquation += secondValue;
+        if(chosenSign == "1/x")
+        {
+            fullEquation = fullEquation.slice(0,-3);
+            fullEquation = "1/" + fullEquation;
+        }
+        else if(chosenSign == ",") {}
+        else if(storedSign != undefined) fullEquation += storedSign;
+        else fullEquation += chosenSign;
+    }
+    
+    document.getElementById("equation").innerHTML = fullEquation;
+}
+
+function updateNumber()
+{
     if(firstValue == undefined)
     {
         if(actualNumber == undefined) firstValue = actualValue;
@@ -205,56 +332,6 @@ function addOperator(operator)
         secondValue = actualNumber
         signToChoose = false;
     }
-    if(secondValue == undefined && (operator == "^2" || operator == "sqrt" || operator == "1/x")) 
-    {
-        chosenSign = operator;
-        doMath(chosenSign, firstValue, secondValue);
-        firstValue = undefined;
-     //   firstValue = actualValue;
-    }
-    else if(secondValue == undefined)
-    {
-        chosenSign = operator;
-    }
-    else
-    {
-        doMath(chosenSign, firstValue, secondValue);
-        storedSign = operator;
-    } 
-
-    chosenSign = operator;
-
-    actualNumber = undefined;
-  
-    if(isNaN(parseFloat(fullEquation[fullEquation.length - 1])))
-    {
-        fullEquation = fullEquation.slice(0,-1) + chosenSign;
-        console.log(fullEquation[fullEquation.length - 1]);
-        console.log("TUTAJ");
-    }
-    else fullEquation += chosenSign;
-    {
-        if(chosenSign == "1/x")
-        {
-            console.log(fullEquation);
-            fullEquation = fullEquation.slice(0,-3);
-            fullEquation = "1/" + fullEquation;
-            //fullEquation = fullEquation
-        }
-        else
-        {
-            document.getElementById("equation").innerHTML = fullEquation;
-        }
-    }
-}
-function addNumber(index)
-{ 
-    if(actualNumber == undefined) actualNumber = calcButtons[index];
-    else actualNumber += calcButtons[index];
-
-    actualValue = actualNumber;
-    fullEquation += calcButtons[index];
-    signToChoose = true;
 }
 
 window.onload = start;
